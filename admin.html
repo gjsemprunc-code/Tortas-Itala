@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Panel · Tortas Itala</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--crema:#fff8f1;--rosa:#f6c9cf;--rosa-f:#e88a98;--cacao:#4a2c2a;--cacao-2:#7a4a40;--linea:#ecd9cc;--verde:#1f9d55;--rojo:#c0392b}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Nunito',sans-serif;background:#f7f1ec;color:var(--cacao);line-height:1.45;min-height:100vh}
+  h1,h2,h3{font-family:'Fraunces',serif}
+  button{font:inherit;cursor:pointer}
+  input,textarea,select{font:inherit;padding:10px 12px;border:1px solid var(--linea);border-radius:10px;background:#fff;width:100%;color:inherit}
+  textarea{resize:vertical;min-height:70px}
+  label{display:flex;flex-direction:column;gap:5px;font-weight:700;font-size:.88rem}
+  label small{font-weight:400;color:var(--cacao-2)}
+  .hidden{display:none!important}
+  .btn{border:0;border-radius:999px;padding:10px 18px;font-weight:800;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+  .b-pri{background:var(--cacao);color:#fff}
+  .b-ok{background:var(--verde);color:#fff}
+  .b-sec{background:#fff;border:1px solid var(--linea);color:var(--cacao)}
+  .b-del{background:#fff;border:1px solid #f1c4bf;color:var(--rojo)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* Login */
+  .login{max-width:440px;margin:60px auto;background:#fff;border-radius:22px;padding:30px;border:1px solid var(--linea);display:flex;flex-direction:column;gap:14px}
+  .login h1{font-size:1.7rem}
+  .login p{color:var(--cacao-2);font-size:.92rem}
+  .row{display:flex;gap:10px}
+  .row>*{flex:1}
+  .err{background:#fdecea;color:var(--rojo);padding:10px 12px;border-radius:10px;font-size:.9rem}
+  .check{flex-direction:row;align-items:center;gap:8px;font-weight:600}
+  .check input{width:auto}
+  details{font-size:.88rem;color:var(--cacao-2)}
+  details summary{cursor:pointer;font-weight:700;color:var(--cacao)}
+  details ol{margin:8px 0 0 18px;display:flex;flex-direction:column;gap:4px}
+
+  /* App */
+  header{background:var(--cacao);color:#fff;position:sticky;top:0;z-index:10}
+  .top{max-width:1000px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .top h1{font-size:1.25rem;flex:1}
+  .top a{color:#fff;font-weight:700;font-size:.9rem}
+  .dirty{background:#e0a53a;color:var(--cacao);border-radius:999px;padding:3px 10px;font-size:.78rem;font-weight:800}
+  main{max-width:1000px;margin:0 auto;padding:20px 18px 120px}
+  .tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+  .tab{background:#fff;border:1px solid var(--linea);border-radius:999px;padding:9px 18px;font-weight:800}
+  .tab.on{background:var(--rosa-f);color:#fff;border-color:var(--rosa-f)}
+  .panel{background:#fff;border:1px solid var(--linea);border-radius:20px;padding:20px}
+  .panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .panel-head h2{font-size:1.3rem}
+  .hint{color:var(--cacao-2);font-size:.88rem;margin-bottom:14px}
+
+  .plist{display:flex;flex-direction:column;gap:10px}
+  .prod{display:flex;align-items:center;gap:12px;border:1px solid var(--linea);border-radius:14px;padding:10px}
+  .thumb{width:64px;height:64px;border-radius:12px;overflow:hidden;flex-shrink:0;background:var(--crema);display:grid;place-items:center}
+  .thumb img{width:100%;height:100%;object-fit:cover}
+  .thumb svg{width:56px;height:56px}
+  .pinfo{flex:1;min-width:0}
+  .pinfo b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pinfo small{color:var(--cacao-2)}
+  .pact{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  .ico{width:36px;height:36px;border-radius:50%;border:1px solid var(--linea);background:#fff;display:grid;place-items:center;font-size:1rem}
+  .switch{display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:700;color:var(--cacao-2);flex-direction:row}
+  .switch input{width:auto}
+  .off{opacity:.55}
+  @media(max-width:620px){.prod{flex-wrap:wrap}.pact{width:100%;justify-content:space-between}}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .full{grid-column:1/-1}
+  @media(max-width:620px){.grid2{grid-template-columns:1fr}}
+
+  .pago{display:grid;grid-template-columns:70px 1fr 1.4fr 40px;gap:8px;align-items:center;margin-bottom:8px}
+  @media(max-width:620px){.pago{grid-template-columns:60px 1fr 40px}.pago .det{grid-column:1/-1;order:5}}
+
+  /* Modal */
+  .modal{position:fixed;inset:0;background:rgba(47,28,26,.5);z-index:30;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow:auto}
+  .sheet{background:#fff;border-radius:22px;width:min(640px,100%);padding:22px;display:flex;flex-direction:column;gap:14px;margin:auto}
+  .sheet h2{font-size:1.4rem}
+  .sizes{display:flex;flex-direction:column;gap:8px}
+  .size{display:grid;grid-template-columns:1fr 120px 40px;gap:8px}
+  .imgbox{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .imgbox .thumb{width:110px;height:110px}
+  .colors{display:flex;gap:10px}
+  .colors input{width:54px;height:40px;padding:2px}
+  .sheet-foot{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+
+  .bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--linea);z-index:20}
+  .bar .in{max-width:1000px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .status{flex:1;font-size:.9rem;color:var(--cacao-2)}
+  .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--cacao);color:#fff;padding:12px 20px;border-radius:999px;font-weight:700;z-index:50;opacity:0;transition:.25s;pointer-events:none}
+  .toast.on{opacity:1}
+  .confirm{position:fixed;inset:0;background:rgba(47,28,26,.5);z-index:40;display:grid;place-items:center;padding:20px}
+  .confirm .sheet{max-width:400px}
+</style>
+</head>
+<body>
+
+<!-- ============ ACCESO ============ -->
+<div id="loginView" class="login">
+  <h1>🎂 Panel de la tienda</h1>
+  <p>Ingresa para editar tortas, precios, fotos y datos de la tienda.</p>
+  <div class="row">
+    <label>Usuario de GitHub<input id="lOwner" placeholder="usuario" autocomplete="off"></label>
+    <label>Repositorio<input id="lRepo" placeholder="tortas-itala" autocomplete="off"></label>
+  </div>
+  <label>Rama<input id="lBranch" value="main" autocomplete="off"></label>
+  <label>Clave de acceso (token de GitHub)<input id="lToken" type="password" placeholder="github_pat_…" autocomplete="off"></label>
+  <label class="check"><input type="checkbox" id="lRemember" checked> Recordar en este dispositivo</label>
+  <div id="lErr" class="err hidden"></div>
+  <button class="btn b-pri" id="lBtn">Entrar</button>
+  <details>
+    <summary>¿Cómo obtengo la clave?</summary>
+    <ol>
+      <li>En GitHub: <b>Settings → Developer settings → Personal access tokens → Fine-grained tokens</b>.</li>
+      <li><b>Generate new token</b>, ponle un nombre y una fecha de vencimiento.</li>
+      <li>En <b>Repository access</b> elige <b>Only select repositories</b> y marca solo el repositorio de la tienda.</li>
+      <li>En <b>Permissions → Contents</b> elige <b>Read and write</b>.</li>
+      <li>Genera el token, cópialo y pégalo aquí.</li>
+    </ol>
+  </details>
+</div>
+
+<!-- ============ PANEL ============ -->
+<div id="appView" class="hidden">
+  <header>
+    <div class="top">
+      <h1>🎂 <span id="hName">Tienda</span> · Panel</h1>
+      <span id="dirty" class="dirty hidden">Cambios sin publicar</span>
+      <a href="./" target="_blank" rel="noopener">Ver tienda ↗</a>
+      <button class="btn b-sec" id="logout" style="padding:6px 14px">Salir</button>
+    </div>
+  </header>
+  <main>
+    <div class="tabs">
+      <button class="tab on" data-tab="tProd">🍰 Tortas</button>
+      <button class="tab" data-tab="tTienda">🏪 Datos de la tienda</button>
+      <button class="tab" data-tab="tPagos">💳 Métodos de pago</button>
+    </div>
+
+    <section id="tProd" class="panel">
+      <div class="panel-head">
+        <h2>Tortas y precios</h2>
+        <button class="btn b-pri" id="addProd">+ Nueva torta</button>
+      </div>
+      <p class="hint">Usa ↑ ↓ para cambiar el orden en la web. Desmarca "Disponible" para mostrarla como agotada sin borrarla.</p>
+      <div class="plist" id="plist"></div>
+    </section>
+
+    <section id="tTienda" class="panel hidden">
+      <div class="panel-head"><h2>Datos de la tienda</h2></div>
+      <div class="grid2" id="tiendaForm"></div>
+    </section>
+
+    <section id="tPagos" class="panel hidden">
+      <div class="panel-head">
+        <h2>Métodos de pago</h2>
+        <button class="btn b-pri" id="addPago">+ Agregar método</button>
+      </div>
+      <p class="hint">Icono (emoji), nombre y una nota corta. Ej.: 📱 · Pago Móvil · Bolívares a tasa del día.</p>
+      <div id="pagosList"></div>
+    </section>
+  </main>
+
+  <div class="bar"><div class="in">
+    <span class="status" id="status">Todo publicado.</span>
+    <button class="btn b-sec" id="discard">Descartar cambios</button>
+    <button class="btn b-ok" id="publish">Publicar cambios</button>
+  </div></div>
+</div>
+
+<!-- ============ EDITOR DE TORTA ============ -->
+<div id="modal" class="modal hidden">
+  <div class="sheet">
+    <h2 id="mTitle">Editar torta</h2>
+    <div class="grid2">
+      <label class="full">Nombre<input id="mNombre" placeholder="Torta de chocolate"></label>
+      <label>Categoría<input id="mCat" list="cats" placeholder="Clásicas"><datalist id="cats"></datalist></label>
+      <label class="check" style="align-self:end;padding-bottom:10px"><input type="checkbox" id="mDisp"> Disponible</label>
+      <label class="full">Descripción<textarea id="mDesc" placeholder="Ingredientes, relleno, cobertura…"></textarea></label>
+    </div>
+    <div>
+      <label style="margin-bottom:6px">Tamaños y precios <small>Ej.: 1 kg — 25</small></label>
+      <div class="sizes" id="mSizes"></div>
+      <button class="btn b-sec" id="mAddSize" style="margin-top:8px">+ Agregar tamaño</button>
+    </div>
+    <div>
+      <label style="margin-bottom:6px">Foto <small>Se reduce automáticamente. Si no hay foto se muestra un dibujo con los colores de abajo.</small></label>
+      <div class="imgbox">
+        <div class="thumb" id="mThumb"></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label class="btn b-sec" style="flex-direction:row;font-size:1rem">📷 Subir foto<input type="file" id="mFile" accept="image/*" class="hidden"></label>
+          <button class="btn b-del" id="mNoImg">Quitar foto</button>
+        </div>
+        <div>
+          <label style="margin-bottom:6px">Colores del dibujo</label>
+          <div class="colors"><input type="color" id="mC0"><input type="color" id="mC1"><input type="color" id="mC2"></div>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn b-sec" id="mCancel">Cancelar</button>
+      <button class="btn b-pri" id="mSave">Guardar torta</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirm" class="confirm hidden">
+  <div class="sheet">
+    <h2 id="cMsg">¿Seguro?</h2>
+    <div class="sheet-foot">
+      <button class="btn b-sec" id="cNo">Cancelar</button>
+      <button class="btn b-del" id="cYes">Sí, eliminar</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== Configuración opcional: deja tu usuario y repositorio fijos aquí ===== */
+const CONFIG = { owner: "", repo: "", branch: "main" };
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store = { get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+                set(k,v){ try { localStorage.setItem(k,v); } catch(e){} },
+                del(k){ try { localStorage.removeItem(k); } catch(e){} } };
+
+let S = null;          // sesión {owner, repo, branch, token}
+let D = null;          // datos en edición
+let original = "";     // JSON publicado
+let sha = null;        // versión de datos.json en GitHub
+let pendientes = {};   // fotos por subir: id -> dataURL
+let editId = null, mSizes = [], mImg = "", mPend = null;
+
+const CAMPOS = [
+  ["nombre","Nombre de la tienda"],["ciudad","Ciudad"],
+  ["whatsapp","WhatsApp (solo números, con código de país)","584246434278"],["moneda","Símbolo de moneda","$"],
+  ["instagram","Instagram (opcional)","@tortasitala"],["etiqueta","Etiqueta superior"],
+  ["titulo","Título principal (parte 1)"],["tituloDestacado","Título principal (parte destacada)"],
+  ["descripcion","Texto de presentación","",true],["notaPrecios","Nota sobre precios","",true],
+  ["notaPagos","Nota sobre pagos","",true],["anticipacion","Recomendación de anticipación","",true],
+  ["entrega","Información de entrega","",true],["direccion","Dirección / ubicación","",true]
+];
+
+/* ---------- GitHub ---------- */
+const api = (path, opt = {}) => fetch(`https://api.github.com/repos/${S.owner}/${S.repo}${path}`, {
+  ...opt, headers: { "Authorization": `Bearer ${S.token}`, "Accept": "application/vnd.github+json", ...(opt.headers||{}) }
+});
+const b64enc = str => { const b = new TextEncoder().encode(str); let s = ""; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode(...b.subarray(i, i+0x8000)); return btoa(s); };
+const b64dec = b64 => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\n/g,"")), c => c.charCodeAt(0)));
+
+async function putFile(path, contentB64, message, fileSha){
+  const body = { message, content: contentB64, branch: S.branch };
+  if (fileSha) body.sha = fileSha;
+  const r = await api(`/contents/${path}`, { method: "PUT", body: JSON.stringify(body) });
+  if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(r.status === 409 ? "conflicto" : (e.message || r.status)); }
+  return r.json();
+}
+
+async function cargarDatos(){
+  const r = await api(`/contents/datos.json?ref=${encodeURIComponent(S.branch)}`);
+  if (r.status === 404) throw new Error("No encontré datos.json en el repositorio. Súbelo junto con index.html.");
+  if (!r.ok) throw new Error("No se pudo leer datos.json (" + r.status + ").");
+  const j = await r.json();
+  sha = j.sha;
+  original = b64dec(j.content);
+  D = JSON.parse(original);
+  D.tienda ||= {}; D.pagos ||= []; D.productos ||= [];
+  original = JSON.stringify(D);
+  pendientes = {};
+}
+
+/* ---------- Acceso ---------- */
+function autodetectar(){
+  const h = location.hostname, m = h.match(/^([^.]+)\.github\.io$/i);
+  const seg = location.pathname.split("/").filter(Boolean);
+  return { owner: CONFIG.owner || (m ? m[1] : ""), repo: CONFIG.repo || (m && seg.length > 1 ? seg[0] : (m ? `${m[1]}.github.io` : "")) };
+}
+function prellenar(){
+  const saved = JSON.parse(store.get("ti_admin") || "null");
+  const a = autodetectar();
+  $("#lOwner").value = saved?.owner || a.owner;
+  $("#lRepo").value = saved?.repo || a.repo;
+  $("#lBranch").value = saved?.branch || CONFIG.branch || "main";
+  if (saved?.token) { $("#lToken").value = saved.token; entrar(); }
+}
+async function entrar(){
+  const err = $("#lErr"); err.classList.add("hidden");
+  S = { owner: $("#lOwner").value.trim(), repo: $("#lRepo").value.trim(), branch: $("#lBranch").value.trim() || "main", token: $("#lToken").value.trim() };
+  if (!S.owner || !S.repo || !S.token) { err.textContent = "Completa usuario, repositorio y clave."; err.classList.remove("hidden"); return; }
+  $("#lBtn").disabled = true; $("#lBtn").textContent = "Entrando…";
+  try {
+    const r = await api("");
+    if (r.status === 401) throw new Error("La clave no es válida o venció.");
+    if (r.status === 404) throw new Error("No encontré el repositorio o la clave no tiene acceso a él.");
+    const repo = await r.json();
+    if (repo.permissions && !repo.permissions.push) throw new Error("La clave no tiene permiso de escritura (Contents: Read and write).");
+    await cargarDatos();
+    if ($("#lRemember").checked) store.set("ti_admin", JSON.stringify(S)); else store.del("ti_admin");
+    $("#loginView").classList.add("hidden"); $("#appView").classList.remove("hidden");
+    renderTodo();
+  } catch(e) {
+    err.textContent = e.message; err.classList.remove("hidden");
+  } finally { $("#lBtn").disabled = false; $("#lBtn").textContent = "Entrar"; }
+}
+$("#lBtn").onclick = entrar;
+$("#lToken").addEventListener("keydown", e => { if (e.key === "Enter") entrar(); });
+$("#logout").onclick = () => {
+  const salir = () => { store.del("ti_admin"); D = null; location.reload(); };
+  hayCambios() ? preguntar("Tienes cambios sin publicar. ¿Salir de todos modos?", salir, "Sí, salir") : salir();
+};
+
+/* ---------- Render ---------- */
+function hayCambios(){ return JSON.stringify(D) !== original || Object.keys(pendientes).length > 0; }
+function marcar(){
+  const c = hayCambios();
+  $("#dirty").classList.toggle("hidden", !c);
+  $("#status").textContent = c ? "Tienes cambios sin publicar. Presiona «Publicar cambios» para que se vean en la web." : "Todo publicado.";
+  $("#publish").disabled = !c; $("#discard").disabled = !c;
+}
+function renderTodo(){ $("#hName").textContent = D.tienda.nombre || "Tienda"; renderProductos(); renderTienda(); renderPagos(); marcar(); }
+
+const cakeSVG = (c = ["#f6c9cf","#fff8f1","#e88a98"]) => `<svg viewBox="0 0 150 150"><rect x="25" y="62" width="100" height="60" rx="10" fill="${esc(c[0])}"/><rect x="25" y="88" width="100" height="6" fill="${esc(c[1])}"/><ellipse cx="75" cy="62" rx="50" ry="12" fill="${esc(c[1])}"/><circle cx="55" cy="56" r="5" fill="${esc(c[2])}"/><circle cx="75" cy="52" r="5" fill="${esc(c[2])}"/><circle cx="95" cy="56" r="5" fill="${esc(c[2])}"/></svg>`;
+const imgSrc = p => pendientes[p.id] || (p.imagen ? p.imagen + (p.imagen.startsWith("data:") ? "" : "?v=" + Date.now()) : "");
+
+function renderProductos(){
+  const P = D.productos;
+  if (!P.length) { $("#plist").innerHTML = `<p class="hint">Aún no hay tortas. Presiona «+ Nueva torta».</p>`; return; }
+  $("#plist").innerHTML = P.map((p,i) => {
+    const src = imgSrc(p);
+    const precios = (p.tamanos||[]).map(s => `${s.nombre}: ${D.tienda.moneda||"$"}${s.precio}`).join(" · ");
+    return `<div class="prod ${p.disponible===false?'off':''}">
+      <div class="thumb">${src ? `<img src="${esc(src)}" alt="">` : cakeSVG(p.colores)}</div>
+      <div class="pinfo"><b>${esc(p.nombre)}</b><small>${esc(p.categoria||"Sin categoría")} — ${esc(precios||"sin precios")}</small></div>
+      <div class="pact">
+        <label class="switch"><input type="checkbox" data-disp="${i}" ${p.disponible!==false?'checked':''}> Disponible</label>
+        <button class="ico" data-up="${i}" title="Subir" ${i===0?'disabled':''}>↑</button>
+        <button class="ico" data-down="${i}" title="Bajar" ${i===P.length-1?'disabled':''}>↓</button>
+        <button class="btn b-sec" data-edit="${i}">Editar</button>
+        <button class="ico" data-del="${i}" title="Eliminar" style="color:var(--rojo)">🗑</button>
+      </div></div>`;
+  }).join("");
+  document.querySelectorAll("[data-disp]").forEach(c => c.onchange = () => { P[c.dataset.disp].disponible = c.checked; renderProductos(); marcar(); });
+  document.querySelectorAll("[data-up]").forEach(b => b.onclick = () => { const i = +b.dataset.up; [P[i-1],P[i]] = [P[i],P[i-1]]; renderProductos(); marcar(); });
+  document.querySelectorAll("[data-down]").forEach(b => b.onclick = () => { const i = +b.dataset.down; [P[i+1],P[i]] = [P[i],P[i+1]]; renderProductos(); marcar(); });
+  document.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => abrirEditor(P[b.dataset.edit].id));
+  document.querySelectorAll("[data-del]").forEach(b => b.onclick = () => preguntar(`¿Eliminar «${P[b.dataset.del].nombre}»?`, () => {
+    const [p] = P.splice(b.dataset.del, 1); delete pendientes[p.id]; renderProductos(); marcar();
+  }));
+}
+
+function renderTienda(){
+  $("#tiendaForm").innerHTML = CAMPOS.map(([k, l, ph, area]) => `<label class="${area?'full':''}">${l}${area
+    ? `<textarea data-k="${k}" placeholder="${esc(ph||"")}">${esc(D.tienda[k])}</textarea>`
+    : `<input data-k="${k}" value="${esc(D.tienda[k])}" placeholder="${esc(ph||"")}">`}</label>`).join("");
+  document.querySelectorAll("#tiendaForm [data-k]").forEach(el => el.oninput = () => {
+    let v = el.value; if (el.dataset.k === "whatsapp") { v = v.replace(/\D/g, ""); }
+    D.tienda[el.dataset.k] = v;
+    if (el.dataset.k === "nombre") $("#hName").textContent = v || "Tienda";
+    marcar();
+  });
+}
+
+function renderPagos(){
+  $("#pagosList").innerHTML = D.pagos.map((p,i) => `<div class="pago">
+    <input data-pi="${i}" data-f="icono" value="${esc(p.icono)}" placeholder="📱" style="text-align:center">
+    <input data-pi="${i}" data-f="nombre" value="${esc(p.nombre)}" placeholder="Nombre">
+    <input class="det" data-pi="${i}" data-f="detalle" value="${esc(p.detalle)}" placeholder="Detalle">
+    <button class="ico" data-pdel="${i}" style="color:var(--rojo)">🗑</button></div>`).join("") || `<p class="hint">Sin métodos de pago.</p>`;
+  document.querySelectorAll("[data-pi]").forEach(el => el.oninput = () => { D.pagos[el.dataset.pi][el.dataset.f] = el.value; marcar(); });
+  document.querySelectorAll("[data-pdel]").forEach(b => b.onclick = () => { D.pagos.splice(b.dataset.pdel, 1); renderPagos(); marcar(); });
+}
+$("#addPago").onclick = () => { D.pagos.push({icono:"💳", nombre:"", detalle:""}); renderPagos(); marcar(); };
+
+document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
+  document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x === t));
+  ["tProd","tTienda","tPagos"].forEach(id => $("#"+id).classList.toggle("hidden", id !== t.dataset.tab));
+});
+
+/* ---------- Editor de torta ---------- */
+function abrirEditor(id){
+  editId = id;
+  const p = id ? D.productos.find(x => x.id === id) : { nombre:"", categoria:"", descripcion:"", disponible:true, tamanos:[{nombre:"1 kg", precio:""}], imagen:"", colores:["#f6c9cf","#fff8f1","#e88a98"] };
+  $("#mTitle").textContent = id ? "Editar torta" : "Nueva torta";
+  $("#mNombre").value = p.nombre; $("#mCat").value = p.categoria || ""; $("#mDesc").value = p.descripcion || "";
+  $("#mDisp").checked = p.disponible !== false;
+  const c = p.colores || ["#f6c9cf","#fff8f1","#e88a98"];
+  $("#mC0").value = c[0]; $("#mC1").value = c[1]; $("#mC2").value = c[2];
+  $("#cats").innerHTML = [...new Set(D.productos.map(x => x.categoria).filter(Boolean))].map(x => `<option value="${esc(x)}">`).join("");
+  mSizes = (p.tamanos || []).map(s => ({...s}));
+  mImg = p.imagen || ""; mPend = id ? (pendientes[id] || null) : null;
+  renderSizes(); renderThumb();
+  $("#modal").classList.remove("hidden");
+  setTimeout(() => $("#mNombre").focus(), 50);
+}
+function renderSizes(){
+  $("#mSizes").innerHTML = mSizes.map((s,i) => `<div class="size">
+    <input data-si="${i}" data-f="nombre" value="${esc(s.nombre)}" placeholder="Tamaño (1 kg, Mediano…)">
+    <input data-si="${i}" data-f="precio" value="${esc(s.precio)}" type="number" min="0" step="0.01" placeholder="Precio">
+    <button class="ico" data-sdel="${i}" style="color:var(--rojo)">✕</button></div>`).join("");
+  document.querySelectorAll("[data-si]").forEach(el => el.oninput = () => { mSizes[el.dataset.si][el.dataset.f] = el.value; });
+  document.querySelectorAll("[data-sdel]").forEach(b => b.onclick = () => { mSizes.splice(b.dataset.sdel, 1); renderSizes(); });
+}
+function renderThumb(){
+  const src = mPend || (mImg ? mImg + "?v=" + Date.now() : "");
+  $("#mThumb").innerHTML = src ? `<img src="${esc(src)}" alt="">` : cakeSVG([$("#mC0").value, $("#mC1").value, $("#mC2").value]);
+  $("#mNoImg").classList.toggle("hidden", !src);
+}
+["#mC0","#mC1","#mC2"].forEach(s => $(s).oninput = renderThumb);
+$("#mAddSize").onclick = () => { mSizes.push({nombre:"", precio:""}); renderSizes(); };
+$("#mNoImg").onclick = () => { mImg = ""; mPend = null; renderThumb(); };
+$("#mFile").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { mPend = await reducir(f, 1200, 0.82); renderThumb(); } catch(err) { toast("No se pudo leer esa imagen"); }
+  e.target.value = "";
+};
+function reducir(file, max, q){
+  return new Promise((ok, no) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height));
+      const cv = document.createElement("canvas"); cv.width = Math.round(img.width*k); cv.height = Math.round(img.height*k);
+      cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+      URL.revokeObjectURL(url); ok(cv.toDataURL("image/jpeg", q));
+    };
+    img.onerror = no; img.src = url;
+  });
+}
+$("#mCancel").onclick = () => $("#modal").classList.add("hidden");
+$("#mSave").onclick = () => {
+  const nombre = $("#mNombre").value.trim();
+  const tamanos = mSizes.filter(s => String(s.nombre).trim() && s.precio !== "" && !isNaN(s.precio)).map(s => ({nombre: String(s.nombre).trim(), precio: Number(s.precio)}));
+  if (!nombre) return toast("Escribe el nombre de la torta");
+  if (!tamanos.length) return toast("Agrega al menos un tamaño con precio");
+  const id = editId || ("p" + Date.now().toString(36));
+  const datos = { id, nombre, categoria: $("#mCat").value.trim(), descripcion: $("#mDesc").value.trim(), disponible: $("#mDisp").checked,
+                  tamanos, imagen: mImg, colores: [$("#mC0").value, $("#mC1").value, $("#mC2").value] };
+  if (editId) { const i = D.productos.findIndex(x => x.id === editId); D.productos[i] = datos; } else D.productos.push(datos);
+  if (mPend) pendientes[id] = mPend; else delete pendientes[id];
+  $("#modal").classList.add("hidden"); renderProductos(); marcar();
+  toast("Torta guardada. Recuerda publicar los cambios.");
+};
+$("#addProd").onclick = () => abrirEditor(null);
+
+/* ---------- Publicar ---------- */
+$("#publish").onclick = async () => {
+  const btn = $("#publish"); btn.disabled = true; $("#discard").disabled = true;
+  try {
+    const ids = Object.keys(pendientes);
+    for (let k = 0; k < ids.length; k++) {
+      const id = ids[k]; const p = D.productos.find(x => x.id === id); if (!p) continue;
+      $("#status").textContent = `Subiendo foto ${k+1} de ${ids.length}…`;
+      const path = `img/${id}-${Date.now()}.jpg`;
+      await putFile(path, pendientes[id].split(",")[1], `Foto: ${p.nombre}`);
+      p.imagen = path; delete pendientes[id];
+    }
+    $("#status").textContent = "Guardando datos…";
+    const res = await putFile("datos.json", b64enc(JSON.stringify(D, null, 2) + "\n"), "Actualización desde el panel", sha);
+    sha = res.content.sha; original = JSON.stringify(D);
+    renderTodo();
+    $("#status").textContent = "✅ Publicado. La web se actualiza en 1 a 2 minutos.";
+    toast("¡Cambios publicados!");
+  } catch(e) {
+    if (e.message === "conflicto") $("#status").textContent = "⚠️ Alguien cambió los datos desde otro lugar. Copia tus cambios, presiona «Descartar» y vuelve a intentarlo.";
+    else $("#status").textContent = "⚠️ No se pudo publicar: " + e.message;
+    btn.disabled = false; $("#discard").disabled = false;
+  }
+};
+$("#discard").onclick = () => preguntar("¿Descartar todos los cambios sin publicar?", async () => {
+  try { await cargarDatos(); renderTodo(); toast("Cambios descartados"); } catch(e) { toast(e.message); }
+}, "Sí, descartar");
+window.addEventListener("beforeunload", e => { if (D && hayCambios()) { e.preventDefault(); e.returnValue = ""; } });
+
+/* ---------- Utilidades ---------- */
+function preguntar(msg, si, txt = "Sí, eliminar"){
+  $("#cMsg").textContent = msg; $("#cYes").textContent = txt; $("#confirm").classList.remove("hidden");
+  $("#cYes").onclick = () => { $("#confirm").classList.add("hidden"); si(); };
+  $("#cNo").onclick = () => $("#confirm").classList.add("hidden");
+}
+let tt; function toast(m){ const t = $("#toast"); t.textContent = m; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("on"), 2400); }
+
+prellenar();
+</script>
+</body>
+</html>
