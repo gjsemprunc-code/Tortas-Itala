@@ -2,18 +2,18 @@
   "tienda": {
     "nombre": "Tortas Itala",
     "ciudad": "Maracaibo",
-    "whatsapp": "584246434278",
+    "whatsapp": "5804120800988",
     "etiqueta": "Repostería artesanal · Maracaibo",
-    "titulo": "Tortas hechas en casa para tus",
-    "tituloDestacado": "momentos dulces",
+    "titulo": "Más de 50 años endulzando los momentos más especiales de tu familia.",
+    "tituloDestacado": "Tradición, pasión y el sabor único de siempre.",
     "descripcion": "Cumpleaños, bautizos, aniversarios o un antojo de domingo. Elige tu torta, arma tu pedido y envíalo directo por WhatsApp para confirmar y pagar.",
-    "moneda": "$",
+    "moneda": "$ ",
     "notaPrecios": "Elige el tamaño y agrégala a tu pedido. Precios en dólares (USD).",
     "notaPagos": "Al confirmar tu pedido por WhatsApp te enviamos los datos para pagar. Para pedidos personalizados se solicita un abono para apartar la fecha.",
-    "anticipacion": "Haz tu pedido con al menos 3 días de anticipación.",
+    "anticipacion": "Haz tu pedido con al menos 4 días de anticipación.",
     "entrega": "Retiro en tienda o delivery en Maracaibo (costo según la zona).",
     "direccion": "Maracaibo, estado Zulia, Venezuela",
-    "instagram": ""
+    "instagram": "Tortascaserasitala"
   },
   "pagos": [
     {
