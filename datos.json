@@ -94,29 +94,29 @@
     },
     {
       "id": "p3",
-      "nombre": "Red Velvet",
+      "nombre": "Beso de angel",
       "categoria": "Especiales",
-      "descripcion": "Terciopelo rojo con frosting de queso crema.",
+      "descripcion": "Torta humedad de tres leche, enriquecida con un relleno  delicado y cremoso de quesillo",
+      "disponible": true,
+      "tamanos": [
+        {
+          "nombre": "1/2 kg",
+          "precio": 50
+        },
+        {
+          "nombre": "1/4 kg",
+          "precio": 25
+        },
+        {
+          "nombre": "1/3 kg",
+          "precio": 18
+        }
+      ],
       "imagen": "",
       "colores": [
         "#b0303b",
         "#fff8f1",
         "#e88a98"
-      ],
-      "disponible": true,
-      "tamanos": [
-        {
-          "nombre": "1/2 kg",
-          "precio": 18
-        },
-        {
-          "nombre": "1 kg",
-          "precio": 30
-        },
-        {
-          "nombre": "2 kg",
-          "precio": 55
-        }
       ]
     },
     {
