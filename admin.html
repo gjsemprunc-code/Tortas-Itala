@@ -137,6 +137,7 @@
       <button class="tab on" data-tab="tProd">🍰 Tortas</button>
       <button class="tab" data-tab="tTienda">🏪 Datos de la tienda</button>
       <button class="tab" data-tab="tPagos">💳 Métodos de pago</button>
+      <button class="tab" data-tab="tPorc">🧮 Calculadora</button>
     </div>
 
     <section id="tProd" class="panel">
@@ -160,6 +161,15 @@
         </div>
       </div>
       <div class="grid2" id="tiendaForm"></div>
+    </section>
+
+    <section id="tPorc" class="panel hidden">
+      <div class="panel-head">
+        <h2>Calculadora de porciones</h2>
+        <button class="btn b-pri" id="addPorc">+ Agregar tamaño</button>
+      </div>
+      <p class="hint">Cuántas porciones (adultos) rinde cada tamaño. La calculadora usa esta tabla para recomendar tortas. Escribe el tamaño <b>igual</b> que en tus tortas (ej. «1/2 kg») para que pueda calcular el precio.</p>
+      <div id="porcList"></div>
     </section>
 
     <section id="tPagos" class="panel hidden">
@@ -187,6 +197,9 @@
       <label class="full">Nombre<input id="mNombre" placeholder="Torta de chocolate"></label>
       <label>Categoría<input id="mCat" list="cats" placeholder="Clásicas"><datalist id="cats"></datalist></label>
       <label class="check" style="align-self:end;padding-bottom:10px"><input type="checkbox" id="mDisp"> Disponible</label>
+      <label class="full">Sección del catálogo
+        <select id="mTipo"><option value="diaria">🎂 Tortas del día</option><option value="porcion">🍰 Porciones</option><option value="encargo">✨ Por encargo</option></select>
+      </label>
       <label class="full">Descripción<textarea id="mDesc" placeholder="Ingredientes, relleno, cobertura…"></textarea></label>
     </div>
     <div>
@@ -244,12 +257,18 @@ let pendientes = {};   // fotos por subir: id -> dataURL
 let logoPend = null;
 let editId = null, mSizes = [], mImg = "", mPend = null;
 
-const DEFECTOS = { horario: "Lunes a domingo: 8:30 AM a 9:00 PM", descripcionPie: "Repostería artesanal hecha con amor.", mostrarTasa: "si", tasaMoneda: "euro", direccionMapa: "Calle 95A con Avenida 17, sector El Tránsito, Maracaibo, Zulia, Venezuela" };
+const PORC_DEF = [{tamano:"1/4 kg",porciones:12},{tamano:"1/2 kg",porciones:25},{tamano:"1 kg",porciones:50},{tamano:"1 1/2 kg",porciones:75},{tamano:"2 kg",porciones:100}];
+const tipoDe = p => p.tipo || (/personaliz|encargo/i.test(p.categoria) ? "encargo" : /porci/i.test(p.categoria) ? "porcion" : "diaria");
+const TIPO_TXT = {diaria:"🎂 Del día", porcion:"🍰 Porción", encargo:"✨ Encargo"};
+const DEFECTOS = { horario: "Lunes a domingo: 8:30 AM a 9:00 PM", descripcionPie: "Repostería artesanal hecha con amor.", mostrarTasa: "si", tasaMoneda: "euro", horaApertura: "08:30", horaCierre: "21:00", direccionMapa: "Calle 95A con Avenida 17, sector El Tránsito, Maracaibo, Zulia, Venezuela" };
 const CAMPOS = [
   ["#","General"],
   ["nombre","Nombre de la tienda"],["ciudad","Ciudad"],
   ["whatsapp","WhatsApp (solo números, con código de país)","584246434278"],["moneda","Símbolo de moneda","$"],
-  ["etiqueta","Etiqueta superior"],
+  ["#","Portada"],
+  ["anioDesde","Año de fundación (opcional)","Ej. 1975"],["heroBadge","Texto de la etiqueta dorada (opcional)","Ej. Desde 1975 · Maracaibo, Venezuela"],
+  ["horaApertura","Hora de apertura (formato 24 h)","08:30"],["horaCierre","Hora de cierre (formato 24 h)","21:00"],
+  ["calificacion","Mostrar estrellas junto al Instagram (si / no)","si"],["etiqueta","Etiqueta (si no hay año ni texto dorado)"],
   ["titulo","Título principal (parte 1)"],["tituloDestacado","Título principal (parte destacada)"],
   ["descripcion","Texto de presentación","",true],["notaPrecios","Nota sobre precios","",true],
   ["notaPagos","Nota sobre pagos","",true],["anticipacion","Recomendación de anticipación","",true],
@@ -294,6 +313,8 @@ async function cargarDatos(){
   original = b64dec(j.content);
   D = JSON.parse(original);
   D.tienda ||= {}; D.pagos ||= []; D.productos ||= [];
+  if (!Array.isArray(D.porciones) || !D.porciones.length) D.porciones = PORC_DEF.map(x => ({...x}));
+  D.productos.forEach(p => { if (!p.tipo) p.tipo = tipoDe(p); });
   for (const k in DEFECTOS) if (D.tienda[k] === undefined) D.tienda[k] = DEFECTOS[k];
   original = JSON.stringify(D);
   pendientes = {}; logoPend = null;
@@ -346,7 +367,7 @@ function marcar(){
   $("#status").textContent = c ? "Tienes cambios sin publicar. Presiona «Publicar cambios» para que se vean en la web." : "Todo publicado.";
   $("#publish").disabled = !c; $("#discard").disabled = !c;
 }
-function renderTodo(){ $("#hName").textContent = D.tienda.nombre || "Tienda"; renderProductos(); renderTienda(); renderPagos(); marcar(); }
+function renderTodo(){ $("#hName").textContent = D.tienda.nombre || "Tienda"; renderProductos(); renderTienda(); renderPagos(); renderPorc(); marcar(); }
 
 const cakeSVG = (c = ["#f6c9cf","#fff8f1","#e88a98"]) => `<svg viewBox="0 0 150 150"><rect x="25" y="62" width="100" height="60" rx="10" fill="${esc(c[0])}"/><rect x="25" y="88" width="100" height="6" fill="${esc(c[1])}"/><ellipse cx="75" cy="62" rx="50" ry="12" fill="${esc(c[1])}"/><circle cx="55" cy="56" r="5" fill="${esc(c[2])}"/><circle cx="75" cy="52" r="5" fill="${esc(c[2])}"/><circle cx="95" cy="56" r="5" fill="${esc(c[2])}"/></svg>`;
 const imgSrc = p => pendientes[p.id] || (p.imagen ? p.imagen + (p.imagen.startsWith("data:") ? "" : "?v=" + Date.now()) : "");
@@ -356,10 +377,10 @@ function renderProductos(){
   if (!P.length) { $("#plist").innerHTML = `<p class="hint">Aún no hay tortas. Presiona «+ Nueva torta».</p>`; return; }
   $("#plist").innerHTML = P.map((p,i) => {
     const src = imgSrc(p);
-    const precios = (p.tamanos||[]).map(s => `${s.nombre}: ${D.tienda.moneda||"$"}${s.precio}`).join(" · ");
+    const precios = (p.tamanos||[]).map(s => `${s.nombre}: ${Number(s.precio) ? (D.tienda.moneda||"$") + s.precio : "Consultar"}`).join(" · ");
     return `<div class="prod ${p.disponible===false?'off':''}">
       <div class="thumb">${src ? `<img src="${esc(src)}" alt="">` : cakeSVG(p.colores)}</div>
-      <div class="pinfo"><b>${esc(p.nombre)}</b><small>${esc(p.categoria||"Sin categoría")} — ${esc(precios||"sin precios")}</small></div>
+      <div class="pinfo"><b>${esc(p.nombre)}</b><small><b style="display:inline;color:var(--rosa-f)">${TIPO_TXT[tipoDe(p)]}</b> · ${esc(p.categoria||"Sin categoría")} — ${esc(precios||"sin precios")}</small></div>
       <div class="pact">
         <label class="switch"><input type="checkbox" data-disp="${i}" ${p.disponible!==false?'checked':''}> Disponible</label>
         <button class="ico" data-up="${i}" title="Subir" ${i===0?'disabled':''}>↑</button>
@@ -401,6 +422,15 @@ function renderTienda(){
   });
 }
 
+function renderPorc(){
+  $("#porcList").innerHTML = D.porciones.map((p,i) => `<div class="size" style="margin-bottom:8px;grid-template-columns:1fr 140px 40px">
+    <input data-qi="${i}" data-f="tamano" value="${esc(p.tamano)}" placeholder="Tamaño (ej. 1/2 kg)">
+    <input data-qi="${i}" data-f="porciones" value="${esc(p.porciones)}" type="number" min="1" placeholder="Porciones">
+    <button class="ico" data-qdel="${i}" style="color:var(--rojo)">🗑</button></div>`).join("") || `<p class="hint">Sin tamaños: se usarán los de referencia.</p>`;
+  document.querySelectorAll("[data-qi]").forEach(el => el.oninput = () => { const v = el.dataset.f === "porciones" ? Number(el.value) || 0 : el.value; D.porciones[el.dataset.qi][el.dataset.f] = v; marcar(); });
+  document.querySelectorAll("[data-qdel]").forEach(b => b.onclick = () => { D.porciones.splice(b.dataset.qdel, 1); renderPorc(); marcar(); });
+}
+$("#addPorc").onclick = () => { D.porciones.push({tamano:"", porciones:""}); renderPorc(); marcar(); };
 function renderPagos(){
   $("#pagosList").innerHTML = D.pagos.map((p,i) => `<div class="pago">
     <input data-pi="${i}" data-f="icono" value="${esc(p.icono)}" placeholder="📱" style="text-align:center">
@@ -414,7 +444,7 @@ $("#addPago").onclick = () => { D.pagos.push({icono:"💳", nombre:"", detalle:"
 
 document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
   document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x === t));
-  ["tProd","tTienda","tPagos"].forEach(id => $("#"+id).classList.toggle("hidden", id !== t.dataset.tab));
+  ["tProd","tTienda","tPagos","tPorc"].forEach(id => $("#"+id).classList.toggle("hidden", id !== t.dataset.tab));
 });
 
 /* ---------- Editor de torta ---------- */
@@ -424,6 +454,7 @@ function abrirEditor(id){
   $("#mTitle").textContent = id ? "Editar torta" : "Nueva torta";
   $("#mNombre").value = p.nombre; $("#mCat").value = p.categoria || ""; $("#mDesc").value = p.descripcion || "";
   $("#mDisp").checked = p.disponible !== false;
+  $("#mTipo").value = tipoDe(p);
   const c = p.colores || ["#f6c9cf","#fff8f1","#e88a98"];
   $("#mC0").value = c[0]; $("#mC1").value = c[1]; $("#mC2").value = c[2];
   $("#cats").innerHTML = [...new Set(D.productos.map(x => x.categoria).filter(Boolean))].map(x => `<option value="${esc(x)}">`).join("");
@@ -436,7 +467,7 @@ function abrirEditor(id){
 function renderSizes(){
   $("#mSizes").innerHTML = mSizes.map((s,i) => `<div class="size">
     <input data-si="${i}" data-f="nombre" value="${esc(s.nombre)}" placeholder="Tamaño (1 kg, Mediano…)">
-    <input data-si="${i}" data-f="precio" value="${esc(s.precio)}" type="number" min="0" step="0.01" placeholder="Precio">
+    <input data-si="${i}" data-f="precio" value="${esc(s.precio)}" type="number" min="0" step="0.01" placeholder="Precio (0 = Consultar)">
     <button class="ico" data-sdel="${i}" style="color:var(--rojo)">✕</button></div>`).join("");
   document.querySelectorAll("[data-si]").forEach(el => el.oninput = () => { mSizes[el.dataset.si][el.dataset.f] = el.value; });
   document.querySelectorAll("[data-sdel]").forEach(b => b.onclick = () => { mSizes.splice(b.dataset.sdel, 1); renderSizes(); });
@@ -469,11 +500,11 @@ function reducir(file, max, q, tipo = "image/jpeg"){
 $("#mCancel").onclick = () => $("#modal").classList.add("hidden");
 $("#mSave").onclick = () => {
   const nombre = $("#mNombre").value.trim();
-  const tamanos = mSizes.filter(s => String(s.nombre).trim() && s.precio !== "" && !isNaN(s.precio)).map(s => ({nombre: String(s.nombre).trim(), precio: Number(s.precio)}));
+  const tamanos = mSizes.filter(s => String(s.nombre).trim() && !isNaN(s.precio || 0)).map(s => ({nombre: String(s.nombre).trim(), precio: Number(s.precio) || 0}));
   if (!nombre) return toast("Escribe el nombre de la torta");
-  if (!tamanos.length) return toast("Agrega al menos un tamaño con precio");
+  if (!tamanos.length) return toast("Agrega al menos un tamaño (el precio puede quedar en 0 = «Consultar»)");
   const id = editId || ("p" + Date.now().toString(36));
-  const datos = { id, nombre, categoria: $("#mCat").value.trim(), descripcion: $("#mDesc").value.trim(), disponible: $("#mDisp").checked,
+  const datos = { id, nombre, tipo: $("#mTipo").value, categoria: $("#mCat").value.trim(), descripcion: $("#mDesc").value.trim(), disponible: $("#mDisp").checked,
                   tamanos, imagen: mImg, colores: [$("#mC0").value, $("#mC1").value, $("#mC2").value] };
   if (editId) { const i = D.productos.findIndex(x => x.id === editId); D.productos[i] = datos; } else D.productos.push(datos);
   if (mPend) pendientes[id] = mPend; else delete pendientes[id];
