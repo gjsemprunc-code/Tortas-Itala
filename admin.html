@@ -234,14 +234,24 @@ let sha = null;        // versión de datos.json en GitHub
 let pendientes = {};   // fotos por subir: id -> dataURL
 let editId = null, mSizes = [], mImg = "", mPend = null;
 
+const DEFECTOS = { horario: "Lunes a domingo: 8:30 AM a 9:00 PM", descripcionPie: "Repostería artesanal hecha con amor.", mostrarTasa: "si", direccionMapa: "Calle 95A con Avenida 17, sector El Tránsito, Maracaibo, Zulia, Venezuela" };
 const CAMPOS = [
+  ["#","General"],
   ["nombre","Nombre de la tienda"],["ciudad","Ciudad"],
   ["whatsapp","WhatsApp (solo números, con código de país)","584246434278"],["moneda","Símbolo de moneda","$"],
-  ["instagram","Instagram (opcional)","@tortasitala"],["etiqueta","Etiqueta superior"],
+  ["etiqueta","Etiqueta superior"],
   ["titulo","Título principal (parte 1)"],["tituloDestacado","Título principal (parte destacada)"],
   ["descripcion","Texto de presentación","",true],["notaPrecios","Nota sobre precios","",true],
   ["notaPagos","Nota sobre pagos","",true],["anticipacion","Recomendación de anticipación","",true],
-  ["entrega","Información de entrega","",true],["direccion","Dirección / ubicación","",true]
+  ["#","Barra superior"],
+  ["mostrarTasa","Mostrar tasa BCV (si / no)","si"],["tasaRespaldo","Tasa de respaldo en Bs. (solo si falla la automática)","Ej. 231.05"],
+  ["#","Ubicación y mapa"],
+  ["direccionMapa","Dirección para el mapa (calle, avenida, sector, ciudad)","Calle 95A con Avenida 17, sector El Tránsito, Maracaibo",true],
+  ["#","Pie de página (footer)"],
+  ["horario","Horario de atención","Lunes a domingo: 8:30 AM a 9:00 PM"],["descripcionPie","Texto bajo el nombre","Repostería artesanal hecha con amor."],
+  ["direccion","Dirección / ubicación","",true],["entrega","Información de entrega","",true],
+  ["instagram","Instagram (usuario)","@tortascaserasitala"],["facebook","Facebook (usuario o página)","tortasitala"],
+  ["tiktok","TikTok (usuario)","@tortasitala"],["copyright","Texto final (opcional)","© 2026 Tortas Itala. Todos los derechos reservados."]
 ];
 
 /* ---------- GitHub ---------- */
@@ -255,7 +265,13 @@ async function putFile(path, contentB64, message, fileSha){
   const body = { message, content: contentB64, branch: S.branch };
   if (fileSha) body.sha = fileSha;
   const r = await api(`/contents/${path}`, { method: "PUT", body: JSON.stringify(body) });
-  if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(r.status === 409 ? "conflicto" : (e.message || r.status)); }
+  if (!r.ok) {
+    const e = await r.json().catch(() => ({}));
+    if (r.status === 409) throw new Error("conflicto");
+    if (r.status === 403 || r.status === 404) throw new Error("la clave no tiene permiso de escritura. En GitHub edita el token y en Permissions → Contents elige «Read and write».");
+    if (r.status === 401) throw new Error("la clave no es válida o venció. Sal del panel y entra con una clave nueva.");
+    throw new Error(e.message || r.status);
+  }
   return r.json();
 }
 
@@ -268,6 +284,7 @@ async function cargarDatos(){
   original = b64dec(j.content);
   D = JSON.parse(original);
   D.tienda ||= {}; D.pagos ||= []; D.productos ||= [];
+  for (const k in DEFECTOS) if (D.tienda[k] === undefined) D.tienda[k] = DEFECTOS[k];
   original = JSON.stringify(D);
   pendientes = {};
 }
@@ -296,8 +313,7 @@ async function entrar(){
     if (r.status === 401) throw new Error("La clave no es válida o venció.");
     if (r.status === 404) throw new Error("No encontré el repositorio o la clave no tiene acceso a él.");
     const repo = await r.json();
-    if (repo.permissions && !repo.permissions.push) throw new Error("La clave no tiene permiso de escritura (Contents: Read and write).");
-    await cargarDatos();
+    if (repo.permissions && !repo.permissions.push) throw new Error("La clave no tiene permiso de escritura (Contents: Read and write).");    await cargarDatos();
     if ($("#lRemember").checked) store.set("ti_admin", JSON.stringify(S)); else store.del("ti_admin");
     $("#loginView").classList.add("hidden"); $("#appView").classList.remove("hidden");
     renderTodo();
@@ -352,7 +368,7 @@ function renderProductos(){
 }
 
 function renderTienda(){
-  $("#tiendaForm").innerHTML = CAMPOS.map(([k, l, ph, area]) => `<label class="${area?'full':''}">${l}${area
+  $("#tiendaForm").innerHTML = CAMPOS.map(([k, l, ph, area]) => k === "#" ? `<h3 class="full" style="margin-top:10px;font-size:1.1rem;border-bottom:1px solid var(--linea);padding-bottom:6px">${l}</h3>` : `<label class="${area?'full':''}">${l}${area
     ? `<textarea data-k="${k}" placeholder="${esc(ph||"")}">${esc(D.tienda[k])}</textarea>`
     : `<input data-k="${k}" value="${esc(D.tienda[k])}" placeholder="${esc(ph||"")}">`}</label>`).join("");
   document.querySelectorAll("#tiendaForm [data-k]").forEach(el => el.oninput = () => {
