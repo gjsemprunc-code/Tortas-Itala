@@ -150,6 +150,15 @@
 
     <section id="tTienda" class="panel hidden">
       <div class="panel-head"><h2>Datos de la tienda</h2></div>
+      <div class="imgbox" style="margin-bottom:18px">
+        <div class="thumb" id="logoThumb" style="width:110px;height:110px;border-radius:50%"></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <b>Logo de la tienda</b>
+          <small style="color:var(--cacao-2)">Ideal: imagen cuadrada o circular. Si no subes ninguno se usa el logo actual.</small>
+          <label class="btn b-sec" style="flex-direction:row;font-size:1rem">🖼️ Cambiar logo<input type="file" id="logoFile" accept="image/*" class="hidden"></label>
+          <button class="btn b-del" id="logoReset">Volver al logo original</button>
+        </div>
+      </div>
       <div class="grid2" id="tiendaForm"></div>
     </section>
 
@@ -232,9 +241,10 @@ let D = null;          // datos en edición
 let original = "";     // JSON publicado
 let sha = null;        // versión de datos.json en GitHub
 let pendientes = {};   // fotos por subir: id -> dataURL
+let logoPend = null;
 let editId = null, mSizes = [], mImg = "", mPend = null;
 
-const DEFECTOS = { horario: "Lunes a domingo: 8:30 AM a 9:00 PM", descripcionPie: "Repostería artesanal hecha con amor.", mostrarTasa: "si", direccionMapa: "Calle 95A con Avenida 17, sector El Tránsito, Maracaibo, Zulia, Venezuela" };
+const DEFECTOS = { horario: "Lunes a domingo: 8:30 AM a 9:00 PM", descripcionPie: "Repostería artesanal hecha con amor.", mostrarTasa: "si", tasaMoneda: "euro", direccionMapa: "Calle 95A con Avenida 17, sector El Tránsito, Maracaibo, Zulia, Venezuela" };
 const CAMPOS = [
   ["#","General"],
   ["nombre","Nombre de la tienda"],["ciudad","Ciudad"],
@@ -244,7 +254,7 @@ const CAMPOS = [
   ["descripcion","Texto de presentación","",true],["notaPrecios","Nota sobre precios","",true],
   ["notaPagos","Nota sobre pagos","",true],["anticipacion","Recomendación de anticipación","",true],
   ["#","Barra superior"],
-  ["mostrarTasa","Mostrar tasa BCV (si / no)","si"],["tasaRespaldo","Tasa de respaldo en Bs. (solo si falla la automática)","Ej. 231.05"],
+  ["mostrarTasa","Mostrar tasa BCV (si / no)","si"],["tasaMoneda","Tasa BCV a mostrar (euro / dolar)","euro"],["tasaRespaldo","Tasa de respaldo en Bs. (solo si falla la automática)","Ej. 231.05"],
   ["#","Ubicación y mapa"],
   ["direccionMapa","Dirección para el mapa (calle, avenida, sector, ciudad)","Calle 95A con Avenida 17, sector El Tránsito, Maracaibo",true],
   ["#","Pie de página (footer)"],
@@ -286,7 +296,7 @@ async function cargarDatos(){
   D.tienda ||= {}; D.pagos ||= []; D.productos ||= [];
   for (const k in DEFECTOS) if (D.tienda[k] === undefined) D.tienda[k] = DEFECTOS[k];
   original = JSON.stringify(D);
-  pendientes = {};
+  pendientes = {}; logoPend = null;
 }
 
 /* ---------- Acceso ---------- */
@@ -329,7 +339,7 @@ $("#logout").onclick = () => {
 };
 
 /* ---------- Render ---------- */
-function hayCambios(){ return JSON.stringify(D) !== original || Object.keys(pendientes).length > 0; }
+function hayCambios(){ return JSON.stringify(D) !== original || Object.keys(pendientes).length > 0 || !!logoPend; }
 function marcar(){
   const c = hayCambios();
   $("#dirty").classList.toggle("hidden", !c);
@@ -367,7 +377,19 @@ function renderProductos(){
   }));
 }
 
+function renderLogo(){
+  const src = logoPend || (D.tienda.logo ? D.tienda.logo + "?v=" + Date.now() : "./favicon-logo-default");
+  $("#logoThumb").innerHTML = (logoPend || D.tienda.logo) ? `<img src="${esc(src)}" alt="">` : `<div style="font-size:.8rem;text-align:center;padding:8px">Logo original</div>`;
+  $("#logoReset").classList.toggle("hidden", !(logoPend || D.tienda.logo));
+}
+$("#logoFile").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { logoPend = await reducir(f, 500, 0.9, "image/png"); renderLogo(); marcar(); } catch(err) { toast("No se pudo leer esa imagen"); }
+  e.target.value = "";
+};
+$("#logoReset").onclick = () => { logoPend = null; D.tienda.logo = ""; renderLogo(); marcar(); };
 function renderTienda(){
+  renderLogo();
   $("#tiendaForm").innerHTML = CAMPOS.map(([k, l, ph, area]) => k === "#" ? `<h3 class="full" style="margin-top:10px;font-size:1.1rem;border-bottom:1px solid var(--linea);padding-bottom:6px">${l}</h3>` : `<label class="${area?'full':''}">${l}${area
     ? `<textarea data-k="${k}" placeholder="${esc(ph||"")}">${esc(D.tienda[k])}</textarea>`
     : `<input data-k="${k}" value="${esc(D.tienda[k])}" placeholder="${esc(ph||"")}">`}</label>`).join("");
@@ -432,14 +454,14 @@ $("#mFile").onchange = async e => {
   try { mPend = await reducir(f, 1200, 0.82); renderThumb(); } catch(err) { toast("No se pudo leer esa imagen"); }
   e.target.value = "";
 };
-function reducir(file, max, q){
+function reducir(file, max, q, tipo = "image/jpeg"){
   return new Promise((ok, no) => {
     const url = URL.createObjectURL(file), img = new Image();
     img.onload = () => {
       const k = Math.min(1, max / Math.max(img.width, img.height));
       const cv = document.createElement("canvas"); cv.width = Math.round(img.width*k); cv.height = Math.round(img.height*k);
       cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
-      URL.revokeObjectURL(url); ok(cv.toDataURL("image/jpeg", q));
+      URL.revokeObjectURL(url); ok(cv.toDataURL(tipo, q));
     };
     img.onerror = no; img.src = url;
   });
@@ -471,6 +493,12 @@ $("#publish").onclick = async () => {
       const path = `img/${id}-${Date.now()}.jpg`;
       await putFile(path, pendientes[id].split(",")[1], `Foto: ${p.nombre}`);
       p.imagen = path; delete pendientes[id];
+    }
+    if (logoPend) {
+      $("#status").textContent = "Subiendo logo…";
+      const path = `img/logo-${Date.now()}.png`;
+      await putFile(path, logoPend.split(",")[1], "Logo de la tienda");
+      D.tienda.logo = path; logoPend = null;
     }
     $("#status").textContent = "Guardando datos…";
     const res = await putFile("datos.json", b64enc(JSON.stringify(D, null, 2) + "\n"), "Actualización desde el panel", sha);
