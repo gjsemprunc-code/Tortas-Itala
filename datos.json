@@ -190,15 +190,9 @@
     },
     {
       "id": "p7",
-      "nombre": "Cheesecake de Fresa",
+      "nombre": "Tortas tradicionales de fresa o melocoton",
       "categoria": "Postres",
-      "descripcion": "Base de galleta, crema de queso y salsa de fresas.",
-      "imagen": "",
-      "colores": [
-        "#fff3e6",
-        "#e86a7a",
-        "#c9a27a"
-      ],
+      "descripcion": "Bizcocho de vainilla humedecido con una mezcla de sabores  ( el secreto de la casa) relleno con doble capa  de crema pastelera de arequipe y trozos de la fruta de su eleccion ( puede ser de fresa o melocoton)",
       "disponible": true,
       "tamanos": [
         {
@@ -209,6 +203,12 @@
           "nombre": "Grande",
           "precio": 32
         }
+      ],
+      "imagen": "img/p7-1794367874207.jpg",
+      "colores": [
+        "#fff3e6",
+        "#e86a7a",
+        "#c9a27a"
       ]
     },
     {
