@@ -167,15 +167,9 @@
     },
     {
       "id": "p5",
-      "nombre": "Selva Negra",
+      "nombre": "Torta quesillo",
       "categoria": "Especiales",
-      "descripcion": "Chocolate, crema chantilly y cerezas.",
-      "imagen": "",
-      "colores": [
-        "#3d221b",
-        "#fff8f1",
-        "#c0392b"
-      ],
+      "descripcion": "Una base de bizcocho de vainilla, marmoleado o chocolate ( puedes elegirlo del sabor de su preferencia) coronado con un quesillo cremoso.",
       "disponible": true,
       "tamanos": [
         {
@@ -186,6 +180,12 @@
           "nombre": "2 kg",
           "precio": 55
         }
+      ],
+      "imagen": "img/p5-1794367406521.jpg",
+      "colores": [
+        "#3d221b",
+        "#fff8f1",
+        "#c0392b"
       ]
     },
     {
