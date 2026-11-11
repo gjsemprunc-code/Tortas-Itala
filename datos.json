@@ -196,12 +196,16 @@
       "disponible": true,
       "tamanos": [
         {
-          "nombre": "Mediano",
+          "nombre": "1kg",
+          "precio": 40
+        },
+        {
+          "nombre": "1/2kg",
           "precio": 20
         },
         {
-          "nombre": "Grande",
-          "precio": 32
+          "nombre": "1/4 kg",
+          "precio": 12
         }
       ],
       "imagen": "img/p7-1794367874207.jpg",
