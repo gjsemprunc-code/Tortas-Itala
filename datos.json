@@ -173,12 +173,12 @@
       "disponible": true,
       "tamanos": [
         {
-          "nombre": "1 kg",
-          "precio": 30
+          "nombre": "1/2kg",
+          "precio": 35
         },
         {
-          "nombre": "2 kg",
-          "precio": 55
+          "nombre": "1/4kg",
+          "precio": 20
         }
       ],
       "imagen": "img/p5-1794367406521.jpg",
