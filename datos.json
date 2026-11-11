@@ -97,7 +97,7 @@
       "nombre": "Tres Leches",
       "categoria": "Clásicas",
       "descripcion": "Esponjosa, bañada en tres leches y cubierta de merengue.",
-      "disponible": false,
+      "disponible": true,
       "tamanos": [
         {
           "nombre": "1/2 kg",
