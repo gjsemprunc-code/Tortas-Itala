@@ -82,7 +82,7 @@
     {
       "id": "p4",
       "nombre": "tortas especiales",
-      "tipo": "encargo",
+      "tipo": "diaria",
       "categoria": "Especiales",
       "descripcion": "Las especialidades de la casa ( piña,beso de angel,ponquet marmoleado o vainilla)",
       "disponible": true,
@@ -255,7 +255,7 @@
     {
       "id": "p8",
       "nombre": "Tortas personalizadas",
-      "tipo": "encargo",
+      "tipo": "diaria",
       "categoria": "Personalizadas",
       "descripcion": "Temática a tu gusto decoradas con merengue o chantilling. Realizadas del sabor de su preferencia",
       "disponible": true,
