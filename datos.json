@@ -81,31 +81,36 @@
     },
     {
       "id": "p4",
-      "nombre": "Torta de Zanahoria",
+      "nombre": "tortas especiales",
+      "tipo": "encargo",
       "categoria": "Especiales",
-      "descripcion": "Con nueces, canela y frosting de queso crema.",
-      "imagen": "",
-      "colores": [
-        "#d98a3d",
-        "#fff8f1",
-        "#8a5a2b"
-      ],
+      "descripcion": "Las especialidades de la casa ( piña,beso de angel,ponquet marmoleado o vainilla)",
       "disponible": true,
       "tamanos": [
         {
           "nombre": "1/2 kg",
-          "precio": 16
+          "precio": 0
         },
         {
           "nombre": "1 kg",
-          "precio": 27
+          "precio": 0
         },
         {
           "nombre": "2 kg",
-          "precio": 48
+          "precio": 0
         }
       ],
-      "tipo": "diaria"
+      "imagenes": [
+        "img/p4-1794518876526-0.jpg",
+        "img/p4-1794518882251-1.jpg",
+        "img/p4-1794518885073-2.jpg"
+      ],
+      "imagen": "img/p4-1794518876526-0.jpg",
+      "colores": [
+        "#d98a3d",
+        "#fff8f1",
+        "#8a5a2b"
+      ]
     },
     {
       "id": "p2",
@@ -257,15 +262,15 @@
       "tamanos": [
         {
           "nombre": "1 kg",
-          "precio": 0
+          "precio": 65
         },
         {
           "nombre": "1/2kg",
-          "precio": 0
+          "precio": 34
         },
         {
           "nombre": "1/4kg",
-          "precio": 0
+          "precio": 23
         }
       ],
       "imagenes": [
