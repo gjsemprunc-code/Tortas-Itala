@@ -134,7 +134,7 @@
 <div id="appView" class="hidden">
   <header>
     <div class="top">
-      <h1>🎂 <span id="hName">Tienda</span> · Panel</h1>
+      <h1>🎂 <span id="hName">Tienda</span> · Panel <small style="font:600 .7rem Nunito,sans-serif;opacity:.7">v2 · varias fotos</small></h1>
       <span id="dirty" class="dirty hidden">Cambios sin publicar</span>
       <a href="./" target="_blank" rel="noopener">Ver tienda ↗</a>
       <button class="btn b-sec" id="logout" style="padding:6px 14px">Salir</button>
@@ -493,12 +493,14 @@ function renderThumb(){
 ["#mC0","#mC1","#mC2"].forEach(s => $(s).oninput = renderThumb);
 $("#mAddSize").onclick = () => { mSizes.push({nombre:"", precio:""}); renderSizes(); };
 $("#mFile").onchange = async e => {
-  const f = e.target.files[0]; if (!f) return;
-  for (const file of e.target.files) {
-    try { mFotos.push(await reducir(file, 1200, 0.82)); } catch(err) { toast("No se pudo leer una de las imágenes"); }
-  }
-  renderThumb();
+  const archivos = Array.from(e.target.files || []);   // copiar antes de limpiar el campo
   e.target.value = "";
+  if (!archivos.length) return;
+  let ok = 0;
+  for (const file of archivos) {
+    try { mFotos.push(await reducir(file, 1200, 0.82)); ok++; renderThumb(); } catch(err) { toast("No se pudo leer una de las imágenes"); }
+  }
+  if (ok) toast(`${ok} foto${ok > 1 ? "s" : ""} agregada${ok > 1 ? "s" : ""} · ahora hay ${mFotos.length}`);
 };
 function reducir(file, max, q, tipo = "image/jpeg"){
   return new Promise((ok, no) => {
