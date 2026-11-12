@@ -48,6 +48,7 @@
     {
       "id": "p1",
       "nombre": "Torta de brownie",
+      "tipo": "diaria",
       "categoria": "Clásicas",
       "descripcion": "Bizcocho  de chocolate con relleno de chocolate puro, cobertura de chocolate y decorada totalmente en chocolate y trozos de chocolate",
       "disponible": true,
@@ -65,13 +66,18 @@
           "precio": 15
         }
       ],
+      "imagenes": [
+        "img/p1-1794366400573.jpg",
+        "img/p1-1794515008705-1.jpg",
+        "img/p1-1794515010620-2.jpg",
+        "img/p1-1794515012193-3.jpg"
+      ],
       "imagen": "img/p1-1794366400573.jpg",
       "colores": [
         "#5b3427",
         "#3d221b",
         "#e0a53a"
-      ],
-      "tipo": "diaria"
+      ]
     },
     {
       "id": "p4",
