@@ -13,7 +13,14 @@
     "anticipacion": "Haz tu pedido con al menos 4 días de anticipación.",
     "entrega": "Retiro en tienda o delivery en Maracaibo (costo según la zona).",
     "direccion": "Maracaibo, estado Zulia, Venezuela",
-    "instagram": "Tortascaserasitala"
+    "instagram": "Tortascaserasitala",
+    "horario": "Lunes a domingo: 8:30 AM a 9:00 PM",
+    "descripcionPie": "Repostería artesanal hecha con amor.",
+    "mostrarTasa": "si",
+    "tasaMoneda": "euro",
+    "horaApertura": "08:30",
+    "horaCierre": "21:00",
+    "direccionMapa": "Calle 95A con Avenida 17, sector El Tránsito, Maracaibo, Zulia, Venezuela"
   },
   "pagos": [
     {
@@ -63,7 +70,8 @@
         "#5b3427",
         "#3d221b",
         "#e0a53a"
-      ]
+      ],
+      "tipo": "diaria"
     },
     {
       "id": "p4",
@@ -90,7 +98,8 @@
           "nombre": "2 kg",
           "precio": 48
         }
-      ]
+      ],
+      "tipo": "diaria"
     },
     {
       "id": "p2",
@@ -113,7 +122,8 @@
         "#fff3df",
         "#f5deb3",
         "#e0a53a"
-      ]
+      ],
+      "tipo": "diaria"
     },
     {
       "id": "p3",
@@ -140,7 +150,8 @@
         "#b0303b",
         "#fff8f1",
         "#e88a98"
-      ]
+      ],
+      "tipo": "diaria"
     },
     {
       "id": "p6",
@@ -163,7 +174,8 @@
         "#f7d79a",
         "#c9822b",
         "#8a4b1a"
-      ]
+      ],
+      "tipo": "diaria"
     },
     {
       "id": "p5",
@@ -186,11 +198,13 @@
         "#3d221b",
         "#fff8f1",
         "#c0392b"
-      ]
+      ],
+      "tipo": "diaria"
     },
     {
       "id": "p7",
       "nombre": "Tortas tradicionales de fresa o melocoton",
+      "tipo": "diaria",
       "categoria": "Postres",
       "descripcion": "Bizcocho de vainilla humedecido con una mezcla de sabores  ( el secreto de la casa) relleno con doble capa  de crema pastelera de arequipe y trozos de la fruta de su eleccion ( puede ser de fresa o melocoton)",
       "disponible": true,
@@ -207,6 +221,11 @@
           "nombre": "1/4 kg",
           "precio": 12
         }
+      ],
+      "imagenes": [
+        "img/p7-1794367874207.jpg",
+        "img/p7-1794514892681-1.jpg",
+        "img/p7-1794514896105-2.jpg"
       ],
       "imagen": "img/p7-1794367874207.jpg",
       "colores": [
@@ -240,7 +259,30 @@
           "nombre": "3 kg",
           "precio": 85
         }
-      ]
+      ],
+      "tipo": "encargo"
+    }
+  ],
+  "porciones": [
+    {
+      "tamano": "1/4 kg",
+      "porciones": 12
+    },
+    {
+      "tamano": "1/2 kg",
+      "porciones": 25
+    },
+    {
+      "tamano": "1 kg",
+      "porciones": 50
+    },
+    {
+      "tamano": "1 1/2 kg",
+      "porciones": 75
+    },
+    {
+      "tamano": "2 kg",
+      "porciones": 100
     }
   ]
 }
