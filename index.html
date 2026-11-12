@@ -131,12 +131,15 @@ section{padding:70px 0}
 .fotos{position:absolute;inset:0;touch-action:pan-y}
 .ph{position:absolute;inset:0;opacity:0;transition:opacity .9s ease}
 .ph.on{opacity:1}
-.ph .bg{position:absolute;inset:-20px;width:calc(100% + 40px);height:calc(100% + 40px);object-fit:cover;filter:blur(18px) saturate(1.2);opacity:.55}
-.ph .fg{position:relative;width:100%;height:100%;object-fit:contain;transition:transform .5s}
-.card:hover .ph .fg{transform:scale(1.03)}
-.lupa{position:absolute;right:12px;bottom:12px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);display:grid;place-items:center;font-size:.95rem;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.2);opacity:0;transition:opacity .2s}
+.ph .bg{position:absolute;inset:-30px;width:calc(100% + 60px);height:calc(100% + 60px);object-fit:cover;filter:blur(26px) saturate(1.15) brightness(1.08);opacity:.7}
+.ph .fg{position:absolute;left:50%;top:50%;width:100%;height:100%;object-fit:contain;translate:-50% -50%;transition:scale .5s}
+.ph .fg.vert{width:auto;height:100%;max-width:none;object-fit:cover;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 9%,#000 91%,transparent 100%)}
+.ph .fg.hor{width:100%;height:auto;max-height:none;object-fit:cover;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 9%,#000 91%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 9%,#000 91%,transparent 100%)}
+.ph .fg.cuad{object-fit:cover}
+.card:hover .ph .fg{scale:1.03}
+.lupa{position:absolute;right:10px;bottom:10px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.75);backdrop-filter:blur(4px);display:grid;place-items:center;font-size:.7rem;z-index:2;box-shadow:0 1px 4px rgba(0,0,0,.15);opacity:0;transition:opacity .2s}
 .card:hover .lupa{opacity:1}
-@media(hover:none){.lupa{opacity:1}}
+@media(hover:none){.lupa{opacity:.85}}
 /* Visor de fotos */
 .visor{position:fixed;inset:0;z-index:90;background:rgba(20,8,10,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
 .visor.on{opacity:1;pointer-events:auto}
@@ -729,7 +732,15 @@ function renderGrid(){
 }
 function fotosDe(p){ return (Array.isArray(p.imagenes) && p.imagenes.length) ? p.imagenes.filter(Boolean) : (p.imagen ? [p.imagen] : []); }
 let carruseles = [];
+function ajustarFotos(){
+  document.querySelectorAll(".ph .fg").forEach(im => {
+    const fijar = () => { if (!im.naturalWidth) return; const r = im.naturalWidth / im.naturalHeight;
+      im.classList.remove("vert","hor","cuad"); im.classList.add(r < .94 ? "vert" : r > 1.06 ? "hor" : "cuad"); };
+    im.complete ? fijar() : im.addEventListener("load", fijar, {once:true});
+  });
+}
 function iniciarCarruseles(){
+  ajustarFotos();
   carruseles.forEach(c => { clearTimeout(c.t0); clearInterval(c.t); }); carruseles = [];
   document.querySelectorAll(".card-img").forEach((box, idx) => {
     const imgs = box.querySelectorAll(".fotos .ph"), dots = box.querySelectorAll(".puntos button");
